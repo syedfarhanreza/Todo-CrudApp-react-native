@@ -1,7 +1,8 @@
-import { Text, View, TextInput, Pressable, StyleSheet } from "react-native";
+import { Text, View, TextInput, Pressable, StyleSheet, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
 import { data } from "@/data/todos";
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 export default function Index() {
   const [todos, setTodos] = useState(data.sort((a, b) => b.id - a.id));
@@ -27,6 +28,20 @@ export default function Index() {
     setTodos(todos.filter((todo) => todo.id !== id));
   };
 
+  const renderItem = ({ item }) => (
+    <View style={styles.todoItem}>
+      <Text 
+      style={[styles.todoText, item.completed && styles.completedTodoText]}
+      onPress={() => toggleTodo(item.id)}
+      >
+        {item.title}
+      </Text>
+      <Pressable onPress={() => removeTodo(item.id)}>
+      <MaterialCommunityIcons name="delete-circle" size={36} color="red" selectable={undefined} />
+      </Pressable>
+    </View>
+  )
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.inputContainer}>
@@ -41,6 +56,12 @@ export default function Index() {
           <Text style={styles.addButtonText}>Add</Text>
         </Pressable>
       </View>
+      <FlatList
+        data={todos}
+        renderItem={renderItem}
+        keyExtractor={todo => todo.id}
+        contentContainerStyle={{flexGrow: 1}}
+        />
     </SafeAreaView>
   );
 }
@@ -50,5 +71,57 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     backgroundColor: 'black'
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+    padding: 10,
+    width: "100%",
+    maxWidth: 1024,
+    marginHorizontal: "auto",
+    pointerEvents: "auto",
+  },
+  input:{
+    flex: 1,
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 10,
+    marginRight: 10,
+    color: 'white',
+    fontSize: 18,
+    minWidth: 0,
+  },
+  addButton: {
+    backgroundColor: "white",
+    borderRadius: 5,
+    padding: 10,
+  },
+  addButtonText: {
+    color: "black",
+    fontSize: 18,
+  },
+  todoItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap:4,
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "gray",
+    width: "100%",
+    maxWidth: 1024,
+    marginHorizontal: "auto",
+    pointerEvents: "auto",
+  },
+  todoText:{
+    flex: 1,
+    fontSize: 18,
+    color: 'white',
+  },
+  completedTodoText: {
+    textDecorationLine: "line-through",
+    color: "gray",
   }
 })
